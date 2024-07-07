@@ -1,0 +1,20 @@
+.admin-main{
+    display: flex;
+}
+
+.admin-cont-1{
+    flex-basis: 20%;
+    background-color: #0070b9;
+    height: 100vh;
+    width: 100%;
+    border-right: 2px dotted #0070b9;
+    /* border-bottom: 2px solid #0070b9; */
+
+}
+.admin-cont-2{
+    flex-basis: 80%;
+    width: 80%;
+    margin-inline: auto;
+    background-color: #ffffff;
+
+}
