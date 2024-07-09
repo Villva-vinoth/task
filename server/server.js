@@ -1,8 +1,9 @@
 const express = require("express")
 const cors = require("cors")
 const mysql = require("./database/db.config")
-const { google } = require("googleapis")
 const googleRoute = require("./api/google/google.router")
+const {createInvoices,createInvoiceTransaction}= require("./models/Invoices.model")
+const invoiceRoute  = require("./api/invoice/invoice.router")
 const app = express()
 
 app.use(express.json())
@@ -14,39 +15,19 @@ mysql.getConnection((err, connection) => {
     }
     if (connection) {
         console.log("connected to the sql")
+        // createInvoices()
+        // createInvoiceTransaction()
+
     }
 })
 
 app.get('/', async (req, res) => {
-    const auth = new google.auth.GoogleAuth({
-        keyFile: "credentials.json",
-        scopes: "https://www.googleapis.com/auth/spreadsheets"
-    })
-
-    const client = await auth.getClient();
-
-    const googlesheets = google.sheets({ version: "v4", auth: client })
-
-    const spreadSheetId = '1tHLz0PxS6rh5T0aQ-44XQgXCq66XHL5FuR0_5K6ZuM0'
-
-    const metaData = await googlesheets.spreadsheets.get({
-        auth: auth,
-        spreadsheetId: spreadSheetId
-    })
-
-    const getRows = await googlesheets.spreadsheets.values.get({
-        auth: auth,
-        spreadsheetId: spreadSheetId,
-        range: "Sheet1"
-    })
     res.send({
         message: "Home Active !",
-        data: getRows.data
     })
 })
-
 app.use('/api/google',googleRoute);
-
+app.use('/api/invoice',invoiceRoute);
 
 port = 3001
 app.listen(port, () => {

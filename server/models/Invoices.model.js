@@ -4,13 +4,16 @@ module.exports = {
     createInvoices : ()=>{
         const data = `
         create table if not exists invoice(
-            invoice_id int primary key,
-            date timestamp default now()
+            invoice_id int auto_increment primary key,
+            invoice_name varchar(100) not null,
+            address varchar(500) not null,
+            date timestamp default now(),
+            delete_flag int default 0
         )
         `
         sql.query(data,(err,result)=>{
             if(err){
-                console.log("error creating table invoice")
+                console.log("error creating table invoice",err)
             }
             else{
                 console.log("Table Invoice created !")
@@ -19,21 +22,23 @@ module.exports = {
     },
     createInvoiceTransaction :()=>{
         const data = `
-        create table if not exists invoiceTransaction(
+        create table if not exists invoice_transaction(
             invoice_trans_id int auto_increment primary key,
-            itemName varchar(500) not null,
+            item_name varchar(500) not null,
             description text not null,
-            productId varchar(100) not null,
+            product_id varchar(100) not null,
             quantity int not null,
-            subTotal float not null,
-            invoice_id int reference invoice(invoice_id),
-            create_at timestamp default now()
+            sub_total float not null,
+            invoice_id int references invoice(invoice_id),
+            create_at timestamp default now(),
+            delete_flag int default 0
+
         )
         `
 
         sql.query(data,(err,result)=>{
             if(err){
-                console.log("error creating the table invoice Transaction")
+                console.log("error creating the table invoice Transaction",err)
             }
             else{
                 console.log("Table Invoice Transaction Created !")

@@ -4,42 +4,59 @@ const sql = require("../../database/db.config")
 module.exports = {
     createInvoice: (data, callback) => {
         try {
-            sql.query(`select count(*) from invoice`, (err, result) => {
+            pool.query(`insert into invoice (invoice_name,address) values (?,?)`, [data.invoiceName,data.address], (err, result) => {
                 if (err) {
-                    callback(err)
+                  return callback(err)
                 }
-                let len = result.length + 1
-                len = len.padStart(4, "0")
-                console.log(len)
-                pool.query(`insert into invoice (invoice_id) values (?)`, [len], (err, result) => {
-                    if (err) {
-                        callback(err)
-                    }
-                    pool.query(`insert into invoiceTransaction (invoice_id,itemName,description,productId,quantity,subTotal) values (?,?,?,?,?,?)`,
-                        [
-                            len,
-                            data.itemName,
-                            data.description,
-                            data.productId,
-                            data.quantity,
-                            data.subTotal
-                        ],
-                        (err,result)=>{
-                            if(err){
-                                callback(err)
-                            }
-                            callback(null,result)
-                        }
-                    )
-                })
+                return callback(null,result)
+               
             })
-
         }
         catch (error) {
             console.log(error)
         }
     },
 
+    createTransactionInvoice :(data,callback) =>{
+        console.log(data)
+        pool.query(`insert into invoice_transaction (invoice_id,item_name,description,product_id,quantity,sub_total) values (?,?,?,?,?,?)`,
+            [
+                data.invoiceId,
+                data.itemName,
+                data.description,
+                data.productId,
+                data.quantity,
+                data.subTotal
+            ],
+            (err,result)=>{
+                if(err){
+                    console.log(err)
+                  return  callback(err)
+                }
+               return callback(null,result)
+            }
+        )
+    },
+    getInvoice:(callback)=>{
+        pool.query(`select * from invoice where delete_flag=0 order by invoice_id desc`,(err,result)=>{
+            if(err){
+                console.log(err)
+                return callback(err);
+            }
+            return callback(null,result);
+        })
+    },
+    getInvoiceTransaction:(data,callback)=>{
+        console.log(data)
+        pool.query(`select * from invoice as i join invoice_transaction as  it on i.invoice_id = it.invoice_id and it.invoice_id=? and it.delete_flag=0 order by invoice_trans_id desc`,[data.invoiceId],(err,result)=>{
+            if(err){
+                console.log(err)
+                return callback(err);
+            }
+            // console.log(result)
+            return callback(null,result);
+        })
+    }
     
 
 }
